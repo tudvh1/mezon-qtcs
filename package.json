@@ -20,13 +20,13 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js -d src/database/typeorm.config.ts",
     "typeorm:ext": "ts-node -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs -d src/database/typeorm.config.ts",
-    "db:seed": "yarn typeorm:ext seed:run",
-    "db:reset": "yarn typeorm schema:drop && yarn migration:run && yarn db:seed",
-    "migration:create": "yarn typeorm migration:create",
-    "migration:generate": "yarn typeorm migration:generate src/database/migrations/migration",
-    "migration:run": "yarn typeorm migration:run",
-    "migration:revert": "yarn typeorm migration:revert",
-    "schema:drop": "yarn typeorm schema:drop"
+    "db:seed": "npm run typeorm:ext seed:run",
+    "db:reset": "npm run typeorm schema:drop && npm run migration:run && npm run db:seed",
+    "migration:create": "npm run typeorm migration:create",
+    "migration:generate": "npm run typeorm migration:generate src/database/migrations/migration",
+    "migration:run": "npm run typeorm migration:run",
+    "migration:revert": "npm run typeorm migration:revert",
+    "schema:drop": "npm run typeorm schema:drop"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
