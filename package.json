@@ -1,8 +1,8 @@
 {
-  "name": "mezon-qtcs-npm",
+  "name": "mezon-qtcs",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "tudvh",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -17,14 +17,36 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js -d src/database/typeorm.config.ts",
+    "typeorm:ext": "ts-node -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs -d src/database/typeorm.config.ts",
+    "db:seed": "yarn typeorm:ext seed:run",
+    "db:reset": "yarn typeorm schema:drop && yarn migration:run && yarn db:seed",
+    "migration:create": "yarn typeorm migration:create",
+    "migration:generate": "yarn typeorm migration:generate src/database/migrations/migration",
+    "migration:run": "yarn typeorm migration:run",
+    "migration:revert": "yarn typeorm migration:revert",
+    "schema:drop": "yarn typeorm schema:drop"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^5.0.1",
+    "@nestjs/swagger": "^11.0.6",
+    "@nestjs/typeorm": "^11.0.0",
+    "bignumber.js": "4.0.4",
+    "mezon-sdk": "^2.7.99",
+    "mysql2": "^3.14.0",
+    "nest-winston": "^1.10.2",
+    "puppeteer": "^24.6.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.22",
+    "typeorm-extension": "^3.7.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
