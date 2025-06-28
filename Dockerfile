@@ -19,6 +19,8 @@ RUN useradd -r -u 1001 -g nodejs nestjs
 
 WORKDIR /app
 
+RUN mkdir -p ./mezon-cache && chown -R nestjs:nodejs /app
+
 COPY package*.json ./
 
 RUN npm ci --only=production && npm cache clean --force
