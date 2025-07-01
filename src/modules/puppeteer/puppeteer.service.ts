@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import puppeteer, { Browser } from 'puppeteer'
-import * as fs from 'fs'
 
 @Injectable()
 export class PuppeteerService {
@@ -10,30 +9,13 @@ export class PuppeteerService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  private getExecutablePath(): string | undefined {
-    const configPath = this.configService.get('PUPPETEER_EXECUTABLE_PATH')
-    if (configPath) {
-      return configPath
-    }
-    return undefined
-  }
-
   public async createBrowser(): Promise<Browser> {
-    const executablePath = this.getExecutablePath()
+    const isProduction = this.configService.get('NODE_ENV') === 'production'
 
     const browser = await puppeteer.launch({
       headless: true,
-      executablePath,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu',
-      ],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      ...(isProduction && { executablePath: this.configService.get('PUPPETEER_CHROMIUM_PATH') }),
     })
 
     this.activeBrowsers.push(browser)
