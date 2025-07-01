@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import puppeteer, { Browser } from 'puppeteer'
-import * as fs from 'fs'
 
 @Injectable()
 export class PuppeteerService {
