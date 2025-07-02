@@ -14,6 +14,6 @@ import { MenuButtonClick, MenuCloseConfirmButtonClick, OrderButtonClick } from '
     OrderButtonClick,
     MenuCloseConfirmButtonClick,
   ],
-  exports: [ButtonClickDispatcher, MenuButtonClick, OrderButtonClick, MenuCloseConfirmButtonClick],
+  exports: [ButtonClickDispatcher],
 })
 export class ButtonClickModule {}
