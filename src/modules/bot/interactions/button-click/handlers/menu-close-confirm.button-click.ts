@@ -29,8 +29,6 @@ export class MenuCloseConfirmButtonClick extends BaseButtonClick {
   // ============================================================================
 
   public async execute(args: string[], eventButtonClick: MessageButtonClicked): Promise<void> {
-    this.logger.log('Execute menu-close-confirm button click')
-
     const [menuId, action] = args
     if (!menuId || !action) {
       this.logger.error(`Invalid menu button click arguments: ${JSON.stringify(args)}`)
@@ -47,7 +45,7 @@ export class MenuCloseConfirmButtonClick extends BaseButtonClick {
       clan,
       channel,
       message: closeConfirmMessage,
-    } = await this.mezonClientService.getMessageWithContext(
+    } = await this.mezonClientService.getMessageContext(
       menu.clanId,
       eventButtonClick.channel_id,
       eventButtonClick.message_id,

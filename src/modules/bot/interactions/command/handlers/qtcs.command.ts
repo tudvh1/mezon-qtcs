@@ -1,36 +1,28 @@
-import { ChannelMessage } from 'mezon-sdk'
+import { EMarkdownType } from 'mezon-sdk'
 
 import { Command } from '@/modules/bot/common/decorators'
-import { MezonClientService } from '@/modules/mezon-client/mezon-client.service'
-import { Logger } from '@nestjs/common'
+import { IMessageContext } from '@/modules/mezon-client/message.interface'
 import { BaseCommand } from '../command.base'
 
 @Command('qtcs')
 export class QtcsCommand extends BaseCommand {
-  private readonly logger = new Logger(QtcsCommand.name)
-
-  constructor(private readonly mezonClientService: MezonClientService) {
+  constructor() {
     super()
   }
 
-  public async execute(args: string[], eventMessage: ChannelMessage): Promise<void> {
-    this.logger.log('Execute qtcs command')
+  public async execute(args: string[], messageContext: IMessageContext): Promise<void> {
+    const { message } = messageContext
 
-    const { message } = await this.mezonClientService.getMessageWithContext(
-      eventMessage.clan_id,
-      eventMessage.channel_id,
-      eventMessage.id,
-    )
+    const messageContent = `🍽️ FOOD:
+truanayangi: Gợi ý quán cho bữa trưa của bạn
+smenu [shopeefood url]: Tạo menu đặt món nhanh chóng từ ShopeeFood
 
-    await message.reply({}, undefined, [
-      {
-        filename: 'dao ly 1.mp4',
-        size: 28859135,
-        url: 'https://cdn.mezon.ai/1840661519625359360/1840665473318916096/1832959783649415200/1751295505998_dao_ly_1.mp4',
-        filetype: 'video/mp4',
-        width: 1080,
-        height: 1920,
-      },
-    ])
+😂 MEME:
+anlau, anhtraisayhai, chuataidau, cheosup, nhac2k8`
+
+    await message.reply({
+      t: messageContent,
+      mk: [{ type: EMarkdownType.PRE, e: messageContent.length }],
+    })
   }
 }

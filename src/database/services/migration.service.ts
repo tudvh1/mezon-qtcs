@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { DataSource } from 'typeorm'
+
+import { TypedConfigService } from '@/modules/typed-config/typed-config.service'
 
 @Injectable()
 export class MigrationService implements OnApplicationBootstrap {
@@ -8,11 +9,11 @@ export class MigrationService implements OnApplicationBootstrap {
 
   constructor(
     private readonly dataSource: DataSource,
-    private readonly configService: ConfigService,
+    private readonly configService: TypedConfigService,
   ) {}
 
   async onApplicationBootstrap() {
-    const shouldRunMigration = this.configService.get('AUTO_MIGRATION') === 'true'
+    const shouldRunMigration = this.configService.get('database.autoMigration')
     if (shouldRunMigration) {
       await this.runMigrations()
     }
@@ -38,7 +39,7 @@ export class MigrationService implements OnApplicationBootstrap {
     } catch (error) {
       this.logger.error(`Migration failed: ${error.message}`, error)
 
-      if (this.configService.get('NODE_ENV') === 'production') {
+      if (this.configService.get('nodeEnv') === 'production') {
         process.exit(1)
       }
 

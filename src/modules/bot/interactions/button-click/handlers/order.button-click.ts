@@ -24,8 +24,6 @@ export class OrderButtonClick extends BaseButtonClick {
   // ============================================================================
 
   public async execute(args: string[], eventButtonClick: MessageButtonClicked): Promise<void> {
-    this.logger.log('Execute order button click')
-
     const [orderId, type] = args
 
     if (!orderId || !type) {
@@ -39,7 +37,7 @@ export class OrderButtonClick extends BaseButtonClick {
       return
     }
 
-    const { clan, message: reportMessage } = await this.mezonClientService.getMessageWithContext(
+    const { clan, message: reportMessage } = await this.mezonClientService.getMessageContext(
       order.menu.clanId,
       eventButtonClick.channel_id,
       eventButtonClick.message_id,

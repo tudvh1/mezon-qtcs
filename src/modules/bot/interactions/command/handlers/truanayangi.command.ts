@@ -1,10 +1,11 @@
 import { Logger } from '@nestjs/common'
-import { ChannelMessage, EMarkdownType, IEmbedProps } from 'mezon-sdk'
+import { EMarkdownType, IEmbedProps } from 'mezon-sdk'
 import { HTTPResponse, Page } from 'puppeteer'
 
 import { COLORS, LUNCH_STORE_RANDOM_TIMES, LUNCH_STORE_URLS } from '@/modules/bot/common/constants'
 import { Command } from '@/modules/bot/common/decorators'
 import { randomArrayItem, randomMultipleTimes } from '@/modules/bot/common/utils'
+import { IMessageContext } from '@/modules/mezon-client/message.interface'
 import { MezonClientService } from '@/modules/mezon-client/mezon-client.service'
 import { IShopeeStoreResponse } from '@/modules/puppeteer/interfaces/shopee'
 import { PuppeteerService } from '@/modules/puppeteer/puppeteer.service'
@@ -120,9 +121,7 @@ export class TruanayangiCommand extends BaseCommand {
     ]
   }
 
-  public async execute(args: string[], eventMessage: ChannelMessage): Promise<void> {
-    this.logger.log('Execute truanayangi command')
-
+  public async execute(args: string[], messageContext: IMessageContext): Promise<void> {
     if (LUNCH_STORE_URLS.length <= this.usedStoreLinks.length) {
       const halfLength = Math.floor(this.usedStoreLinks.length / 2)
       this.usedStoreLinks = this.usedStoreLinks.slice(halfLength)
@@ -135,11 +134,7 @@ export class TruanayangiCommand extends BaseCommand {
     )
     this.usedStoreLinks.push(storeUrl)
 
-    const { channel, message } = await this.mezonClientService.getMessageWithContext(
-      eventMessage.clan_id,
-      eventMessage.channel_id,
-      eventMessage.id,
-    )
+    const { channel, message } = messageContext
 
     const messageContent = '🔃 Đang tải thông tin quán...'
     const replyMessageId = (

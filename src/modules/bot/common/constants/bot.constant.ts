@@ -30,3 +30,5 @@ export const COLORS: string[] = [
   '#e60076', // Pink
   '#ec003f', // Rose
 ] as const
+
+export const ANONYMOUS_USER_ID = '1767478432163172999'

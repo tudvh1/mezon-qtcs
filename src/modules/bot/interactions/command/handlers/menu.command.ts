@@ -1,18 +1,19 @@
 import { Logger } from '@nestjs/common'
 import {
-  ChannelMessage,
   ChannelMessageContent,
   EButtonMessageStyle,
   EMarkdownType,
   EMessageComponentType,
   IMessageActionRow,
 } from 'mezon-sdk'
+import { User } from 'mezon-sdk/dist/cjs/mezon-client/structures/User'
 import { HTTPResponse, Page } from 'puppeteer'
 
 import { Menu } from '@/database/entities'
 import { Command } from '@/modules/bot/common/decorators'
 import { EMenuActionButton, EMenuFormName, EMenuStoreType } from '@/modules/menu/menu.enum'
 import { MenuService } from '@/modules/menu/menu.service'
+import { IMessageContext } from '@/modules/mezon-client/message.interface'
 import { MezonClientService } from '@/modules/mezon-client/mezon-client.service'
 import { IMenuResponse, IShopeeStoreResponse } from '@/modules/puppeteer/interfaces/shopee'
 import { PuppeteerService } from '@/modules/puppeteer/puppeteer.service'
@@ -71,11 +72,9 @@ export class MenuCommand extends BaseCommand {
               if (responseUrl.includes(menuApiPattern)) {
                 const responseBody = (await response.json()) as IMenuResponse
                 menuData = responseBody.reply.menu_infos
-                this.logger.log('Menu data received')
               } else if (responseUrl.includes(storeApiPattern)) {
                 const responseBody = (await response.json()) as IShopeeStoreResponse
                 storeData = responseBody.reply.delivery_detail
-                this.logger.log('Store data received')
               }
 
               if (menuData && storeData) {
@@ -110,7 +109,7 @@ export class MenuCommand extends BaseCommand {
     })
   }
 
-  private createEmbed(menu: Menu, eventMessage: ChannelMessage) {
+  private createEmbed(menu: Menu, user: User) {
     return [
       {
         color: randomArrayItem(COLORS),
@@ -147,8 +146,8 @@ export class MenuCommand extends BaseCommand {
           },
         ],
         footer: {
-          text: `Được tạo bởi ${this.mezonClientService.getUserDisplayName(eventMessage)}`,
-          icon_url: eventMessage.clan_avatar || eventMessage.avatar,
+          text: `Được tạo bởi ${this.mezonClientService.getUserDisplayName(user)}`,
+          icon_url: user.clan_avatar || user.avartar,
         },
       },
     ]
@@ -179,14 +178,9 @@ export class MenuCommand extends BaseCommand {
     ]
   }
 
-  public async execute(args: string[], eventMessage: ChannelMessage): Promise<void> {
-    this.logger.log('Execute menu command')
-
-    const { clan, channel, message } = await this.mezonClientService.getMessageWithContext(
-      eventMessage.clan_id,
-      eventMessage.channel_id,
-      eventMessage.id,
-    )
+  public async execute(args: string[], messageContext: IMessageContext): Promise<void> {
+    const { clan, channel, message } = messageContext
+    const user = await this.mezonClientService.fetchUser(clan, message.sender_id)
 
     if (args.length < 1 || !args[0]) {
       const messageContent = 'Vui lòng nhập link hợp lệ...'
@@ -242,11 +236,11 @@ export class MenuCommand extends BaseCommand {
           storeUrl,
           storeName: storeData.name,
           storeType: EMenuStoreType.ShopeeFood,
-          ownerId: eventMessage.sender_id,
+          ownerId: message.sender_id,
           menuData,
         })
 
-        const embed = this.createEmbed(menu, eventMessage)
+        const embed = this.createEmbed(menu, user)
         const components = this.createComponents(menu.id)
         const dataSend: ChannelMessageContent = {
           embed,

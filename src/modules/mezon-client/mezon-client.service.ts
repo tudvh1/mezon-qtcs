@@ -1,10 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { ChannelMessage, MezonClient } from 'mezon-sdk'
+import { MezonClient } from 'mezon-sdk'
 import { Clan } from 'mezon-sdk/dist/cjs/mezon-client/structures/Clan'
 import { Message } from 'mezon-sdk/dist/cjs/mezon-client/structures/Message'
 import { TextChannel } from 'mezon-sdk/dist/cjs/mezon-client/structures/TextChannel'
 import { User } from 'mezon-sdk/dist/cjs/mezon-client/structures/User'
+
+import { TypedConfigService } from '../typed-config/typed-config.service'
+import { IMessageContext } from './message.interface'
 
 @Injectable()
 export class MezonClientService {
@@ -12,8 +14,8 @@ export class MezonClientService {
   private mezonClient: MezonClient
   private retryCount = 0
 
-  constructor(private readonly configService: ConfigService) {
-    this.mezonClient = new MezonClient(this.configService.get('MEZON_TOKEN'))
+  constructor(private readonly configService: TypedConfigService) {
+    this.mezonClient = new MezonClient(this.configService.get('mezon.token'))
     void this.initializeClient()
   }
 
@@ -36,11 +38,11 @@ export class MezonClientService {
     }
   }
 
-  public async getMessageWithContext(
+  public async getMessageContext(
     clanId: string | undefined,
     channelId: string | undefined,
     messageId: string | undefined,
-  ): Promise<{ clan: Clan; channel: TextChannel; message: Message }> {
+  ): Promise<IMessageContext> {
     if (!clanId || !channelId || !messageId) {
       throw new Error('Invalid message parameters')
     }
@@ -91,15 +93,13 @@ export class MezonClientService {
 
   public async fetchUser(clan: Clan, userId: string): Promise<User> {
     const user = await clan.users.fetch(userId)
-
     if (!user) {
       throw new Error('User not found')
     }
-
     return user
   }
 
-  public getUserDisplayName(user: User | ChannelMessage): string {
+  public getUserDisplayName(user: User): string {
     return user.clan_nick || user.display_name || user.username || 'Unknown'
   }
 }

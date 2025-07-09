@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
 
 import { PuppeteerService } from './puppeteer.service'
 
 @Module({
-  imports: [ConfigModule],
+  imports: [],
   providers: [PuppeteerService],
   exports: [PuppeteerService],
 })
