@@ -1,10 +1,10 @@
-import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { utilities, WinstonModule } from 'nest-winston'
 import * as winston from 'winston'
 
 import { AppModule } from './app.module'
+import { TypedConfigService } from './modules/typed-config/typed-config.service'
 
 async function bootstrap() {
   const winstonLogger = WinstonModule.createLogger({
@@ -23,11 +23,11 @@ async function bootstrap() {
     logger: winstonLogger,
   })
 
-  const configService = app.get(ConfigService)
+  const configService = app.get(TypedConfigService)
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Mezon QTCS Bot API')
-    .setDescription('API documentation for the Mezon Qua Tang Cot Song Bot')
+    .setDescription('API documentation for the Mezon Quà Tặng Cột Sống Bot')
     .setVersion('0.0.1')
     .addBearerAuth()
     .build()
@@ -38,8 +38,8 @@ async function bootstrap() {
     origin: '*',
   })
 
-  const port: number = configService.get('APP_PORT') ?? 3000
-  const apiUrl: string = configService.get('APP_API_URL') ?? ''
+  const port = configService.get('app.port')
+  const apiUrl = configService.get('app.apiUrl')
   await app.listen(port, () => {
     console.log(`Server is running on ${apiUrl}`)
   })

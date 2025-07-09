@@ -37,8 +37,6 @@ export class MenuButtonClick extends BaseButtonClick {
   // ============================================================================
 
   public async execute(args: string[], eventButtonClick: MessageButtonClicked): Promise<void> {
-    this.logger.log('Execute menu button click')
-
     const [menuId, action] = args
 
     if (!menuId || !action) {
@@ -58,7 +56,7 @@ export class MenuButtonClick extends BaseButtonClick {
       clan,
       channel,
       message: menuMessage,
-    } = await this.mezonClientService.getMessageWithContext(
+    } = await this.mezonClientService.getMessageContext(
       menu.clanId,
       eventButtonClick.channel_id,
       eventButtonClick.message_id,

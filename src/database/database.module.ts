@@ -1,21 +1,20 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
+import { TypedConfigService } from '@/modules/typed-config/typed-config.service'
 import { MigrationService } from './services/migration.service'
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      inject: [TypedConfigService],
+      useFactory: (configService: TypedConfigService) => ({
         type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
+        host: configService.get('database.host'),
+        port: configService.get('database.port'),
+        database: configService.get('database.name'),
+        username: configService.get('database.user'),
+        password: configService.get('database.password'),
         entities: ['dist/database/entities/*.entity.js'],
         subscribers: ['dist/database/subscribers/*.subscriber.js'],
         migrations: ['dist/database/migrations/*.js'],
@@ -25,7 +24,6 @@ import { MigrationService } from './services/migration.service'
         timezone: 'Z',
       }),
     }),
-    ConfigModule,
   ],
   providers: [MigrationService],
 })
